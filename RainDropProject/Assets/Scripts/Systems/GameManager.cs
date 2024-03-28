@@ -4,23 +4,35 @@ namespace GMDG.RainDrop.System
 {
     public class GameManager : MonoBehaviour
     {
-        private State currentState;
+        public enum EState
+        {
+            MainMenu,
+            Gameplay
+        }
+
+        private EState currentState;
 
         #region UnityMessages
 
         private void Awake()
         {
-            EventManager.Instance.Publish(Event.OnGameManagerLoaded);
+            // Subscribes
+            EventManager.Instance.Subscribe(EEvent.OnStartGameClicked, StartGameClicked);
+
+            EventManager.Instance.Publish(EEvent.OnGameManagerLoaded);
         }
 
         private void OnDestroy()
         {
-            EventManager.Instance.Publish(Event.OnGameManagerDestroyed);
+            // Unsubscribes
+            EventManager.Instance.Unsubscribe(EEvent.OnStartGameClicked, StartGameClicked);
+
+            EventManager.Instance.Publish(EEvent.OnGameManagerDestroyed);
         }
 
         private void Start()
         {
-            ChangeState(State.MainMenu);
+            ChangeState(EState.MainMenu);
         }
 
         private void Update()
@@ -28,38 +40,47 @@ namespace GMDG.RainDrop.System
             // State tick
             switch (currentState)
             {
-                case State.MainMenu:
+                case EState.MainMenu:
                     break;
 
-                case State.Gameplay:
+                case EState.Gameplay:
                     break;
             }
         }
 
         #endregion
 
-        private void ChangeState(State newState)
+        #region Event_Listeners
+
+        private void StartGameClicked(object[] args)
         {
-            State oldState = currentState;
+            ChangeState(EState.Gameplay);
+        }
+
+        #endregion
+
+        private void ChangeState(EState newState)
+        {
+            EState oldState = currentState;
             currentState = newState;
 
             // Code on exit
             switch(oldState)
             {
-                case State.MainMenu:
+                case EState.MainMenu:
                     break;
 
-                case State.Gameplay:
+                case EState.Gameplay:
                     break;
             }
 
             // Code on enter
             switch (newState)
             {
-                case State.MainMenu:
+                case EState.MainMenu:
                     break;
 
-                case State.Gameplay:
+                case EState.Gameplay:
                     break;
             }
 
@@ -67,13 +88,9 @@ namespace GMDG.RainDrop.System
             // ...
 
 
-            EventManager.Instance.Publish(Event.OnGameManagerChangedState, oldState, newState);
+            EventManager.Instance.Publish(EEvent.OnGameManagerChangedState, oldState, newState);
         }
 
-        public enum State
-        {
-            MainMenu,
-            Gameplay
-        }
+
     }
 }

@@ -10,6 +10,8 @@ namespace GMDG.RainDrop.System
         private IEnumerator _endOfFrameCoroutine;
         private WaitForEndOfFrame _waitForEndOfFrame;
 
+        #region Unity_Messages
+
         private void Awake()
         {
 #if UNITY_EDITOR && DEBUG_MODE
@@ -27,12 +29,14 @@ namespace GMDG.RainDrop.System
             }
         }
 
+        #endregion
+
 #if UNITY_EDITOR
         [Conditional("DEBUG_MODE")]
 #else
         [Conditional("DONT_RUN")]
 #endif
-        public static void LogEventManager(Event eventToLog)
+        public static void LogEventManager(EEvent eventToLog)
         {
             Debug.Log(string.Format("<color=lightblue>Event: <b>{0}</b></color>", eventToLog));
         }

@@ -16,7 +16,7 @@ namespace GMDG.RainDrop.System
             SceneManager.LoadScene("DebugSystem", LoadSceneMode.Additive);
 #endif
 
-            EventManager.Instance.Publish(Event.OnSystemsLoaded);
+            EventManager.Instance.Publish(EEvent.OnSystemsLoaded);
         }
 
         /*
@@ -27,7 +27,7 @@ namespace GMDG.RainDrop.System
             Destroy(GameObject.Find("[Debug Updater]"));
             SceneManager.UnloadSceneAsync("Boot");
 
-            EventManager.Instance.Publish(Event.OnBootFinished);
+            EventManager.Instance.Publish(EEvent.OnBootFinished);
         }
     }
 }

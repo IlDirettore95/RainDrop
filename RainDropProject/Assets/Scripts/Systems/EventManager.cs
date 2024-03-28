@@ -22,11 +22,11 @@ namespace GMDG.RainDrop.System
             }
         }
 
-        private Dictionary<Event, Action<object[]>> _listenersDictionary = new Dictionary<Event, Action<object[]>>();
+        private Dictionary<EEvent, Action<object[]>> _listenersDictionary = new Dictionary<EEvent, Action<object[]>>();
 
         private EventManager() { }
 
-        public void Subscribe(Event eventName, Action<object[]> listener)
+        public void Subscribe(EEvent eventName, Action<object[]> listener)
         {
             if (!_listenersDictionary.ContainsKey(eventName))
             {
@@ -38,7 +38,7 @@ namespace GMDG.RainDrop.System
             }
         }
 
-        public void Unsubscribe(Event eventName, Action<object[]> listener)
+        public void Unsubscribe(EEvent eventName, Action<object[]> listener)
         {      
             if (_listenersDictionary.ContainsKey(eventName))
             {
@@ -51,7 +51,7 @@ namespace GMDG.RainDrop.System
             }
         }
 
-        public void Publish(Event eventName, params object[] args)
+        public void Publish(EEvent eventName, params object[] args)
         {
             LogManager.LogEventManager(eventName);
 
@@ -65,7 +65,7 @@ namespace GMDG.RainDrop.System
         {
             string text = string.Empty;
 
-            foreach (Event e in _listenersDictionary.Keys)
+            foreach (EEvent e in _listenersDictionary.Keys)
             {
                 text += "Event registred: " + e + "\tListeners: " + _listenersDictionary[e]?.GetInvocationList().Length + Environment.NewLine;
             }
@@ -74,7 +74,7 @@ namespace GMDG.RainDrop.System
         }
     }
 
-    public enum Event
+    public enum EEvent
     {
         // Boot------------------------------------------------------------------------
         // Called when the boot has finished initializing the systems
@@ -95,5 +95,17 @@ namespace GMDG.RainDrop.System
         OnLevelManagerLoaded,
         // Called when the level manager finished its onDestroy
         OnLevelManagerDestroyed,
+        // Called when a drop is spawned
+        OnDropSpawned,
+        // Called when a drop is despawned
+        OnDropDespawned,
+
+        // UIManager-------------------------------------------------------------------
+        // Called when the ui manager finished its awake
+        OnUIManagerLoaded,
+        // Called when the ui manager finished its onDestroy
+        OnUIManagerDestroyed,
+        // Called when the start game button is clicked in the main menu
+        OnStartGameClicked,
     }
 }
