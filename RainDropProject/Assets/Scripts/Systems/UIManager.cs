@@ -12,12 +12,14 @@ namespace GMDG.RainDrop.System
         [SerializeField] private GameObject MainMenuUIPrefab;
         [SerializeField] private GameObject GameplayUIPrefab;
 
-        private IEnumerator _forceInputFieldFocusCoroutine;
-
         #region Unity_Messages
 
         private void Awake()
         {
+            Debug.Assert(CanvasGO != null, "There is not a Canvas linked to UI Manager!");
+            Debug.Assert(MainMenuUIPrefab != null, "There is not a MainMenuUIPrefab linked to UI Manager!");
+            Debug.Assert(GameplayUIPrefab != null, "There is not a GameplayUIPrefab linked to UI Manager!");
+
             // Subscribes
             EventManager.Instance.Subscribe(EEvent.OnGameManagerChangedState, GameManagerStateChanged);
 
@@ -40,13 +42,6 @@ namespace GMDG.RainDrop.System
         {
             GameManager.EState oldState = (GameManager.EState)args[0];
             GameManager.EState newState = (GameManager.EState)args[1];
-
-            switch (oldState)
-            {
-                case GameManager.EState.Gameplay:
-                    StopCoroutine(_forceInputFieldFocusCoroutine);
-                    break;
-            }
             
             switch (newState)
             {
@@ -61,49 +56,16 @@ namespace GMDG.RainDrop.System
 
         #endregion
 
-        // This coroutine is active to ensure that the input field is always focused
-        private IEnumerator ForceInputFieldFocusCoroutine(TMP_InputField inputField)
-        {
-            while(true)
-            {
-                if (!inputField.isFocused)
-                {
-                    inputField.ActivateInputField();
-                }
-                yield return null;
-            }
-        }
-
         private void StartMainMenu()
         {
             DestroyAllCanvasChildren();
-            GameObject mainMenuGO = Instantiate(MainMenuUIPrefab, CanvasGO.transform);
-            mainMenuGO.GetComponentInChildren<Button>().onClick.AddListener(StartGameButtonClicked);
-
-            // Handle cursor
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            Instantiate(MainMenuUIPrefab, CanvasGO.transform);
         }
 
         private void StartGameplay()
         {
             DestroyAllCanvasChildren();
-            GameObject gameplayGO = Instantiate(GameplayUIPrefab, CanvasGO.transform);
-            TMP_InputField inputField = gameplayGO.GetComponentInChildren<TMP_InputField>();
-
-            // Auto focus Input Field
-            inputField.ActivateInputField();
-            _forceInputFieldFocusCoroutine = ForceInputFieldFocusCoroutine(inputField);
-            StartCoroutine(_forceInputFieldFocusCoroutine);
-
-            // Handle cursor
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
-
-        private void StartGameButtonClicked()
-        {
-            EventManager.Instance.Publish(EEvent.OnStartGameClicked);
+            Instantiate(GameplayUIPrefab, CanvasGO.transform);
         }
 
         // Clear all child UI elements

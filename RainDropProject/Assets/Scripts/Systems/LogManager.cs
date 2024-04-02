@@ -49,7 +49,8 @@ namespace GMDG.RainDrop.System
         public static void LogLevelManager(LevelManager context)
         { 
             Debug.Log(string.Format("<color=orange>Level Manager: <b>List of drop count: {0}</b></color>", context.Drops.Count));
-            Debug.Log(string.Format("<color=orange>Level Manager: <b>{0}</b></color>", context.DropsPool.ToString()));
+            Debug.Log(string.Format("<color=orange>Level Manager: <b>Normal Pool: {0}</b></color>", context.DropsPool.ToString()));
+            Debug.Log(string.Format("<color=orange>Level Manager: <b>Golden Pool: {0}</b></color>", context.GoldenDropsPool.ToString()));
         }
 
 #if UNITY_EDITOR

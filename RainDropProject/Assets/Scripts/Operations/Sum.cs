@@ -2,7 +2,10 @@
 {
     public class Sum : Operation
     {
-        public Sum(int firstOperand, int secondOperand, int result) : base(firstOperand, secondOperand, result) { }
+        public Sum(int firstOperand, int secondOperand) : base(firstOperand, secondOperand) 
+        { 
+            Result = firstOperand + secondOperand;
+        }
 
         public override string ToString()
         {

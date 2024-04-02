@@ -214,6 +214,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OperationText: {fileID: 4595476955127828628}
+  IsGolden: 1
 --- !u!1 &9100789221644435781
 GameObject:
   m_ObjectHideFlags: 0

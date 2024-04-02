@@ -9,6 +9,8 @@ namespace GMDG.RainDrop.Entities
     {
         [SerializeField] TMP_Text OperationText;
 
+        public bool IsGolden = false;
+
         private Operation _operation;
         public Operation Operation
         {
@@ -31,11 +33,5 @@ namespace GMDG.RainDrop.Entities
         }
 
         #endregion
-
-        public int GetOperationResult()
-        {
-            Debug.Assert(_operation != null, "Operation has not been set on this drop!");
-            return _operation.Result;
-        }
     }
 }

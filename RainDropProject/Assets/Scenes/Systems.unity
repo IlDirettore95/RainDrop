@@ -167,6 +167,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3b4acd9487972c4db491d794d36ade7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Difficulties:
+  - {fileID: 11400000, guid: 326c8e604d4dcb94cbcc633a8ceaf6b7, type: 2}
   DropPrefab: {fileID: 4068437126354128997, guid: c3884428f6a562241997855bbc49f1ea, type: 3}
   GoldenDropPrefab: {fileID: 8049558678087896568, guid: c4d154f06d2798a4faaec053d4fc0cba, type: 3}
 --- !u!1 &519420028

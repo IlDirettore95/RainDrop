@@ -16,7 +16,7 @@ namespace GMDG.RainDrop.System
             SceneManager.LoadScene("DebugSystem", LoadSceneMode.Additive);
 #endif
 
-            EventManager.Instance.Publish(EEvent.OnSystemsLoaded);
+            EventManager.Instance.Publish(EEvent.OnBootSystemsLoaded);
         }
 
         /*

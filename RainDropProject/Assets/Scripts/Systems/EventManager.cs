@@ -78,7 +78,7 @@ namespace GMDG.RainDrop.System
     {
         // Boot------------------------------------------------------------------------
         // Called when the boot has finished initializing the systems
-        OnSystemsLoaded,
+        OnBootSystemsLoaded,
         // Called when the boot has finished its work and started to unload
         OnBootFinished,
 
@@ -89,6 +89,8 @@ namespace GMDG.RainDrop.System
         OnGameManagerDestroyed,
         // Called when the game manager state changed
         OnGameManagerChangedState,
+        // Called when the game points changed
+        OnGameManagerChangedPoints,
 
         // LevelManager----------------------------------------------------------------
         // Called when the level manager finished its awake
@@ -96,9 +98,13 @@ namespace GMDG.RainDrop.System
         // Called when the level manager finished its onDestroy
         OnLevelManagerDestroyed,
         // Called when a drop is spawned
-        OnDropSpawned,
+        OnLevelManagerDropSpawned,
         // Called when a drop is despawned
-        OnDropDespawned,
+        OnLevelManagerDropDespawned,
+        // Called when a submitted result explodes a drop
+        OnLevelManagerDropExplosion,
+        // Called when a submitted result explodes a golden drop
+        OnLevelManagerGoldenDropExplosion,
 
         // UIManager-------------------------------------------------------------------
         // Called when the ui manager finished its awake
@@ -106,6 +112,8 @@ namespace GMDG.RainDrop.System
         // Called when the ui manager finished its onDestroy
         OnUIManagerDestroyed,
         // Called when the start game button is clicked in the main menu
-        OnStartGameClicked,
+        OnUIManagerStartGameClicked,
+        // Called when a valid potential result is submitted via input field
+        OnUIManagerResultWasSubmitted,
     }
 }
