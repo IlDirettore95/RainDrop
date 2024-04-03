@@ -16,7 +16,6 @@ namespace GMDG.RainDrop.Entities
         public override string ToString()
         {
             string text = string.Empty;
-
             string firstOperandText = _firstOperand.ToString();
             string secondOperandText = _secondOperand.ToString();
 

@@ -12,7 +12,7 @@ namespace GMDG.RainDrop.System
 
         [SerializeField] private GameObject MainMenuUIPrefab;
         [SerializeField] private GameObject GameplayUIPrefab;
-        [SerializeField] private GameObject VictoryUIPrefab;
+        [SerializeField] private GameObject GameOverUIPrefab;
 
         #region Unity_Messages
 
@@ -21,6 +21,7 @@ namespace GMDG.RainDrop.System
             Debug.Assert(CanvasGO != null, "There is not a Canvas linked to UI Manager!");
             Debug.Assert(MainMenuUIPrefab != null, "There is not a MainMenuUIPrefab linked to UI Manager!");
             Debug.Assert(GameplayUIPrefab != null, "There is not a GameplayUIPrefab linked to UI Manager!");
+            Debug.Assert(GameOverUIPrefab != null, "There is not a GameOverUIPrefab linked to UI Manager!");
 
             // Subscribes
             EventManager.Instance.Subscribe(EEvent.OnGameManagerChangedState, GameManagerStateChanged);
@@ -53,8 +54,8 @@ namespace GMDG.RainDrop.System
                 case GameManager.EState.Gameplay:
                     StartGameplay();
                     break;
-                case GameManager.EState.Victory:
-                    StartVictory();
+                case GameManager.EState.GameOver:
+                    StartGameOver();
                     break;
             }
         }
@@ -74,10 +75,10 @@ namespace GMDG.RainDrop.System
             Instantiate(GameplayUIPrefab, CanvasGO.transform);
         }
 
-        private void StartVictory()
+        private void StartGameOver()
         {
             DestroyAllCanvasChildren();
-            Instantiate(VictoryUIPrefab, CanvasGO.transform);
+            Instantiate(GameOverUIPrefab, CanvasGO.transform);
         }
 
         // Clear all child UI elements

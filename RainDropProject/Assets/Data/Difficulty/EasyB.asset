@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cf1aa15201d8534fb7f9511d237b60b, type: 3}
   m_Name: EasyB
   m_EditorClassIdentifier: 
-  GoldenDropSpawnPercentage: 8
-  DropsSpeed: 0.7
-  SpawnCooldown: 1.66
-  ScoreToReach: 2000
+  GoldenDropSpawnPercentage: 4
+  DropsSpeed: 1.5
+  SpawnCooldown: 2
+  ScoreToReach: 1500
   OperationsData:
   - FirstOperand: 3
     SecondOperand: 5
@@ -27,17 +27,23 @@ MonoBehaviour:
     SecondOperand: 4
     OperationType: 0
   - FirstOperand: 1
-    SecondOperand: 8
+    SecondOperand: 9
     OperationType: 0
-  - FirstOperand: 5
+  - FirstOperand: 7
+    SecondOperand: 2
+    OperationType: 0
+  - FirstOperand: 7
+    SecondOperand: 7
+    OperationType: 0
+  - FirstOperand: -1
+    SecondOperand: 2
+    OperationType: 0
+  - FirstOperand: -4
     SecondOperand: 4
-    OperationType: 1
-  - FirstOperand: 13
-    SecondOperand: 4
-    OperationType: 1
-  - FirstOperand: 12
-    SecondOperand: 1
-    OperationType: 1
+    OperationType: 0
+  - FirstOperand: 9
+    SecondOperand: 9
+    OperationType: 0
   - FirstOperand: 4
     SecondOperand: 4
     OperationType: 2
@@ -47,6 +53,12 @@ MonoBehaviour:
   - FirstOperand: 6
     SecondOperand: 6
     OperationType: 2
-  - FirstOperand: 6
+  - FirstOperand: 3
     SecondOperand: 5
+    OperationType: 2
+  - FirstOperand: 2
+    SecondOperand: 8
+    OperationType: 2
+  - FirstOperand: 8
+    SecondOperand: 3
     OperationType: 2

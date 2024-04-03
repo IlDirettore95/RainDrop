@@ -53,10 +53,6 @@ namespace GMDG.RainDrop.System
                     _spawnCooldown = new WaitForSeconds(Difficulties[_currentDifficultyIndex].SpawnCooldown);
                     EventManager.Instance.Publish(EEvent.OnLevelManagerDifficultyChanged, Difficulties[_currentDifficultyIndex]);
                 }
-                else
-                {
-                    EventManager.Instance.Publish(EEvent.OnLevelManagerLastDifficultyFinished);
-                }
             }
         }
 
@@ -254,27 +250,32 @@ namespace GMDG.RainDrop.System
                 return;
             }
 
-            for (int i = dropsList.Count - 1; i >= 0 && dropsList.Count > 0; i--)
+            // First Drop added
+            Drop drop = dropsList[0];
+            if (drop.IsGolden)
             {
-                Drop drop = dropsList[i];
-                if (drop.IsGolden)
-                {
-                    ExplodeAllDrop();
-                    EventManager.Instance.Publish(EEvent.OnLevelManagerGoldenDropExplosion);
-                    break;
-                }
-                else
-                {
-                    DespawnDrop(_drops.IndexOf(dropsList[i]));
-                    EventManager.Instance.Publish(EEvent.OnLevelManagerDropExplosion);
-                }
+                ExplodeAllDrop();
+                EventManager.Instance.Publish(EEvent.OnLevelManagerGoldenDropExplosion);
+
+            }
+            else
+            {
+                DespawnDrop(_drops.IndexOf(drop));
+                EventManager.Instance.Publish(EEvent.OnLevelManagerDropExplosion);
             }
         }
 
         private void TargetScoreReached(object[] args)
         {
             // Change Difficulty
+            if (CurrentDifficultyIndex >= Difficulties.Count - 1)
+            {
+                EventManager.Instance.Publish(EEvent.OnLevelManagerLastDifficultyFinished);
+                return;
+            }
             CurrentDifficultyIndex++;
+
+   
         }
 
         #endregion
@@ -315,6 +316,10 @@ namespace GMDG.RainDrop.System
 
                         case EOperationType.And:
                             randomOperation = new And(firstOperand, secondOperand);
+                            break;
+
+                        case EOperationType.Or:
+                            randomOperation = new Or(firstOperand, secondOperand);
                             break;
                     }
 

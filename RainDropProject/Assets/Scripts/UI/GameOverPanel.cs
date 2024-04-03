@@ -1,10 +1,10 @@
-using GMDG.RainDrop.System;
+﻿using GMDG.RainDrop.System;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace GMDG.RainDrop.UI
 {
-    public class VictoryPanel : MonoBehaviour
+    public class GameOverPanel : MonoBehaviour
     {
         [SerializeField] private Button GoBackToMenu;
 

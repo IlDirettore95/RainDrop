@@ -1,4 +1,5 @@
 ﻿using GMDG.RainDrop.Scriptable;
+using System;
 using UnityEngine;
 
 namespace GMDG.RainDrop.System
@@ -12,7 +13,6 @@ namespace GMDG.RainDrop.System
             MainMenu,
             Gameplay,
             GameOver,
-            Victory
         }
 
         private EState _currentState;
@@ -84,6 +84,8 @@ namespace GMDG.RainDrop.System
             }
         }
 
+        public int BestScore { get; private set; }
+
         #region UnityMessages
 
         private void Awake()
@@ -99,6 +101,8 @@ namespace GMDG.RainDrop.System
             }
 
             _lives = 3;
+            Points = 0;
+            BestScore = DataManager.Instance.LoadInt("Best_Score", 0);
 
             // Subscribes
             EventManager.Instance.Subscribe(EEvent.OnUIManagerStartGameClicked, StartGameClicked);
@@ -107,7 +111,6 @@ namespace GMDG.RainDrop.System
             EventManager.Instance.Subscribe(EEvent.OnLevelManagerGoldenDropExplosion, DropExploded);
             EventManager.Instance.Subscribe(EEvent.OnLevelManagerDropDespawned, DropDespawned);
             EventManager.Instance.Subscribe(EEvent.OnLevelManagerDifficultyChanged, DifficultyChanged);
-            EventManager.Instance.Subscribe(EEvent.OnLevelManagerLastDifficultyFinished, LastDifficultyFinished);
 
             EventManager.Instance.Publish(EEvent.OnGameManagerLoaded);
         }
@@ -128,7 +131,6 @@ namespace GMDG.RainDrop.System
             EventManager.Instance.Unsubscribe(EEvent.OnLevelManagerGoldenDropExplosion, DropExploded);
             EventManager.Instance.Unsubscribe(EEvent.OnLevelManagerDropDespawned, DropDespawned);
             EventManager.Instance.Unsubscribe(EEvent.OnLevelManagerDifficultyChanged, DifficultyChanged);
-            EventManager.Instance.Unsubscribe(EEvent.OnLevelManagerLastDifficultyFinished, LastDifficultyFinished);
 
             EventManager.Instance.Publish(EEvent.OnGameManagerDestroyed);
         }
@@ -149,9 +151,6 @@ namespace GMDG.RainDrop.System
                     break;
 
                 case EState.GameOver:
-                    break;
-
-                case EState.Victory:
                     break;
             }
         }
@@ -193,11 +192,6 @@ namespace GMDG.RainDrop.System
             PointsLeftToChangeDifficulty += difficulty.ScoreToReach;
         }
 
-        private void LastDifficultyFinished(object[] args)
-        {
-            ChangeState(EState.Victory);
-        }
-
         #endregion
 
         private void ChangeState(EState newState)
@@ -222,13 +216,28 @@ namespace GMDG.RainDrop.System
 
                 case EState.Gameplay:
                     break;
+
+                case EState.GameOver:
+                    EnterGameOver();
+                    break;
             }
 
             // Code for specific transitions
             // ...
 
-
             CurrentState = newState;
+        }
+
+        private void EnterGameOver()
+        {
+            if (Points > BestScore)
+            {
+                BestScore = Points;
+                DataManager.Instance.SaveInt("Best_Score", Points);
+            }
+
+            Points = 0;
+            Lives = 3;
         }
     }
 }

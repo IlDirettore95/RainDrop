@@ -1,7 +1,9 @@
 ﻿using GMDG.RainDrop.System;
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GMDG.RainDrop.UI
 {
@@ -10,6 +12,7 @@ namespace GMDG.RainDrop.UI
         [SerializeField] private TMP_InputField InputField;
         [SerializeField] private TMP_Text PointsText;
         [SerializeField] private TMP_Text LivesText;
+        [SerializeField] private Slider Slider;
 
         private IEnumerator _forceInputFieldFocusCoroutine;
 
@@ -37,6 +40,8 @@ namespace GMDG.RainDrop.UI
 
             EventManager.Instance.Subscribe(EEvent.OnGameManagerPointsChanged, ScoreChanged);
             EventManager.Instance.Subscribe(EEvent.OnGameManagerLivesChanged, LivesChanged);
+            EventManager.Instance.Subscribe(EEvent.OnGameManagerPointsLeftToChangeDifficultyChanged, PointsLeftChanged);
+            EventManager.Instance.Subscribe(EEvent.OnLevelManagerLastDifficultyFinished, LastDifficultyFinished);
         }
 
         private void Start()
@@ -52,6 +57,8 @@ namespace GMDG.RainDrop.UI
 
             EventManager.Instance.Unsubscribe(EEvent.OnGameManagerPointsChanged, ScoreChanged);
             EventManager.Instance.Unsubscribe(EEvent.OnGameManagerLivesChanged, LivesChanged);
+            EventManager.Instance.Unsubscribe(EEvent.OnGameManagerPointsLeftToChangeDifficultyChanged, PointsLeftChanged);
+            EventManager.Instance.Unsubscribe(EEvent.OnLevelManagerLastDifficultyFinished, LastDifficultyFinished);
         }
 
         #endregion
@@ -67,6 +74,21 @@ namespace GMDG.RainDrop.UI
         {
             int lives = (int)args[0];
             LivesText.text = lives.ToString();
+        }
+
+        private void PointsLeftChanged(object[] args)
+        {
+            int pointsLeft = (int)args[0];
+            int deltaPoints = (int)args[1];
+            
+            Slider.value = 1 - (float)pointsLeft / LevelManager.Instance.CurrentDifficulty.ScoreToReach;
+        }
+
+        private void LastDifficultyFinished(object[] obj)
+        {
+            Slider.value = 0;
+
+            EventManager.Instance.Unsubscribe(EEvent.OnGameManagerPointsLeftToChangeDifficultyChanged, PointsLeftChanged);
         }
 
         #endregion

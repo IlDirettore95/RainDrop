@@ -52,7 +52,7 @@ namespace GMDG.RainDrop.Scriptable
                         OperationsData[i].SecondOperand == OperationsData[j].SecondOperand &&
                         OperationsData[i].OperationType == OperationsData[j].OperationType)
                     {
-                        Debug.LogError("Operation List contains duplicates!");
+                        Debug.LogError(string.Format("Operation List contains duplicates! 1st op: {0}, 2nd op: {1}, op type {2}", OperationsData[i].FirstOperand, OperationsData[i].SecondOperand, OperationsData[i].OperationType));
                     }
                 }
             }
@@ -75,6 +75,7 @@ namespace GMDG.RainDrop.Scriptable
         Sub,
         Mul,
         Div,
-        And
+        And,
+        Or,
     }
 }

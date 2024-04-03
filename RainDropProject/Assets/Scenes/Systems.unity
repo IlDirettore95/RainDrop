@@ -171,6 +171,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 326c8e604d4dcb94cbcc633a8ceaf6b7, type: 2}
   - {fileID: 11400000, guid: 2f1ee21965473274fa2d366f4523e8e3, type: 2}
   - {fileID: 11400000, guid: 102a804ca1e6e3e4dbe73278c72b1288, type: 2}
+  - {fileID: 11400000, guid: 9e39e8fe045efc74789c9f5e436c07a4, type: 2}
+  - {fileID: 11400000, guid: 88b967563ad821941838f617f239aefa, type: 2}
+  - {fileID: 11400000, guid: 413e65d2f2327004a95f14a2910209ff, type: 2}
+  - {fileID: 11400000, guid: f91db3a2e60bf4c4697e2ea26658b8d7, type: 2}
   DropPrefab: {fileID: 4068437126354128997, guid: c3884428f6a562241997855bbc49f1ea, type: 3}
   GoldenDropPrefab: {fileID: 8049558678087896568, guid: c4d154f06d2798a4faaec053d4fc0cba, type: 3}
 --- !u!1 &519420028
@@ -602,7 +606,7 @@ MonoBehaviour:
   CanvasGO: {fileID: 1779470027}
   MainMenuUIPrefab: {fileID: 6435273392393064521, guid: 85a7e8e9cf9ddb24ba16963ac67bd08a, type: 3}
   GameplayUIPrefab: {fileID: 7133966829137328652, guid: ea420c9b350309644b1eba376e8e3de4, type: 3}
-  VictoryUIPrefab: {fileID: 7890044524263332272, guid: 618d0a57ddf51934ca22dc51a2e14a28, type: 3}
+  GameOverUIPrefab: {fileID: 8099507789241308418, guid: 0b59abac0891c314a841adaff64bf247, type: 3}
 --- !u!1 &1779470027
 GameObject:
   m_ObjectHideFlags: 0

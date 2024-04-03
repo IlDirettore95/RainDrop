@@ -53,8 +53,9 @@ namespace GMDG.RainDrop.System
 
         public void Publish(EEvent eventName, params object[] args)
         {
+#if DEBUG_MODE && DEBUG_EVENT_MANAGER
             LogManager.LogEventManager(eventName);
-
+#endif
             if (_listenersDictionary.ContainsKey(eventName))
             {
                 _listenersDictionary[eventName]?.Invoke(args);

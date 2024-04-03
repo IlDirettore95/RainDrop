@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cf1aa15201d8534fb7f9511d237b60b, type: 3}
+  m_Name: ImpossibleB
+  m_EditorClassIdentifier: 
+  GoldenDropSpawnPercentage: 10
+  DropsSpeed: 1.66
+  SpawnCooldown: 1.2
+  ScoreToReach: 50000
+  OperationsData:
+  - FirstOperand: 999
+    SecondOperand: 10
+    OperationType: 0
+  - FirstOperand: -9
+    SecondOperand: -9
+    OperationType: 0
+  - FirstOperand: -90
+    SecondOperand: 1
+    OperationType: 0
+  - FirstOperand: -101
+    SecondOperand: 101
+    OperationType: 1
+  - FirstOperand: 12
+    SecondOperand: 12
+    OperationType: 2
+  - FirstOperand: -2
+    SecondOperand: -45
+    OperationType: 2
+  - FirstOperand: 100
+    SecondOperand: 100
+    OperationType: 2
+  - FirstOperand: 256
+    SecondOperand: 2
+    OperationType: 3
+  - FirstOperand: 144
+    SecondOperand: -144
+    OperationType: 3
+  - FirstOperand: 169
+    SecondOperand: 13
+    OperationType: 3
+  - FirstOperand: 111
+    SecondOperand: 1
+    OperationType: 4
+  - FirstOperand: 10
+    SecondOperand: 110
+    OperationType: 4
+  - FirstOperand: 100
+    SecondOperand: 100
+    OperationType: 4
+  - FirstOperand: 11
+    SecondOperand: 0
+    OperationType: 4
+  - FirstOperand: 10
+    SecondOperand: 101
+    OperationType: 5
+  - FirstOperand: 0
+    SecondOperand: 100
+    OperationType: 5
+  - FirstOperand: 11
+    SecondOperand: 101
+    OperationType: 5

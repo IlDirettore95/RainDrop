@@ -9,16 +9,23 @@ namespace GMDG.RainDrop.UI
     public class MainMenuPanel : MonoBehaviour
     {
         [SerializeField] private Button StartButton;
+        [SerializeField] private TMP_Text BestScoreText;
 
         #region Unity_Messages
 
         private void Awake()
         {
             Debug.Assert(StartButton != null, "StartButton is not serialized!");
+            Debug.Assert(BestScoreText != null, "BestScoreText is not serialized!");
 
             // Handle cursor
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+        }
+
+        private void Start()
+        {
+            BestScoreText.text = GameManager.Instance.BestScore.ToString();
         }
 
         private void OnEnable()

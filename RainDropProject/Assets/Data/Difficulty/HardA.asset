@@ -10,52 +10,55 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8cf1aa15201d8534fb7f9511d237b60b, type: 3}
-  m_Name: MediumA
+  m_Name: HardA
   m_EditorClassIdentifier: 
-  GoldenDropSpawnPercentage: 6
-  DropsSpeed: 1.2
-  SpawnCooldown: 2
-  ScoreToReach: 1000
+  GoldenDropSpawnPercentage: 8
+  DropsSpeed: 1.3
+  SpawnCooldown: 1.8
+  ScoreToReach: 1500
   OperationsData:
   - FirstOperand: 12
-    SecondOperand: 3
+    SecondOperand: 12
     OperationType: 0
   - FirstOperand: -1
-    SecondOperand: 5
+    SecondOperand: 10
     OperationType: 0
   - FirstOperand: 4
-    SecondOperand: 9
+    SecondOperand: -9
     OperationType: 0
-  - FirstOperand: 15
+  - FirstOperand: 13
     SecondOperand: 14
     OperationType: 0
-  - FirstOperand: 9
-    SecondOperand: 4
-    OperationType: 1
+  - FirstOperand: -20
+    SecondOperand: 21
+    OperationType: 0
   - FirstOperand: 13
-    SecondOperand: 7
+    SecondOperand: -13
     OperationType: 1
-  - FirstOperand: 4
-    SecondOperand: 5
+  - FirstOperand: 20
+    SecondOperand: 9
     OperationType: 1
-  - FirstOperand: 2
-    SecondOperand: 4
+  - FirstOperand: -6
+    SecondOperand: -8
     OperationType: 1
-  - FirstOperand: 6
-    SecondOperand: 5
+  - FirstOperand: 10
+    SecondOperand: 11
     OperationType: 2
-  - FirstOperand: 4
+  - FirstOperand: -5
     SecondOperand: 8
     OperationType: 2
-  - FirstOperand: -2
-    SecondOperand: 8
+  - FirstOperand: 135
+    SecondOperand: 0
     OperationType: 2
-  - FirstOperand: 12
-    SecondOperand: 4
+  - FirstOperand: -8
+    SecondOperand: 2
+    OperationType: 2
+  - FirstOperand: 60
+    SecondOperand: 15
     OperationType: 3
-  - FirstOperand: 24
-    SecondOperand: 6
+  - FirstOperand: 48
+    SecondOperand: 8
     OperationType: 3
-  - FirstOperand: 36
-    SecondOperand: 4
+  - FirstOperand: 90
+    SecondOperand: 15
     OperationType: 3
