@@ -90,7 +90,13 @@ namespace GMDG.RainDrop.System
         // Called when the game manager state changed
         OnGameManagerChangedState,
         // Called when the game points changed
-        OnGameManagerChangedPoints,
+        OnGameManagerPointsChanged,
+        // Called when the score left to change difficulty changed
+        OnGameManagerPointsLeftToChangeDifficultyChanged,
+        // Called when the target score to change difficulty was reached
+        OnGameManagerTargetPointsReached,
+        // Called when the players lives changed
+        OnGameManagerLivesChanged,
 
         // LevelManager----------------------------------------------------------------
         // Called when the level manager finished its awake
@@ -99,12 +105,16 @@ namespace GMDG.RainDrop.System
         OnLevelManagerDestroyed,
         // Called when a drop is spawned
         OnLevelManagerDropSpawned,
-        // Called when a drop is despawned
+        // Called when a drop is despawned because it reched the end of the screen
         OnLevelManagerDropDespawned,
         // Called when a submitted result explodes a drop
         OnLevelManagerDropExplosion,
         // Called when a submitted result explodes a golden drop
         OnLevelManagerGoldenDropExplosion,
+        // Called when difficulty changed
+        OnLevelManagerDifficultyChanged,
+        // Called when the last difficulty finished
+        OnLevelManagerLastDifficultyFinished,
 
         // UIManager-------------------------------------------------------------------
         // Called when the ui manager finished its awake
@@ -115,5 +125,7 @@ namespace GMDG.RainDrop.System
         OnUIManagerStartGameClicked,
         // Called when a valid potential result is submitted via input field
         OnUIManagerResultWasSubmitted,
+        // Called when the go back to menu button is clicked
+        OnUIManagerGoBackToMenuClicked,
     }
 }

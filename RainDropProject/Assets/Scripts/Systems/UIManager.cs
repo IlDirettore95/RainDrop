@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +12,7 @@ namespace GMDG.RainDrop.System
 
         [SerializeField] private GameObject MainMenuUIPrefab;
         [SerializeField] private GameObject GameplayUIPrefab;
+        [SerializeField] private GameObject VictoryUIPrefab;
 
         #region Unity_Messages
 
@@ -51,8 +53,12 @@ namespace GMDG.RainDrop.System
                 case GameManager.EState.Gameplay:
                     StartGameplay();
                     break;
+                case GameManager.EState.Victory:
+                    StartVictory();
+                    break;
             }
         }
+
 
         #endregion
 
@@ -66,6 +72,12 @@ namespace GMDG.RainDrop.System
         {
             DestroyAllCanvasChildren();
             Instantiate(GameplayUIPrefab, CanvasGO.transform);
+        }
+
+        private void StartVictory()
+        {
+            DestroyAllCanvasChildren();
+            Instantiate(VictoryUIPrefab, CanvasGO.transform);
         }
 
         // Clear all child UI elements

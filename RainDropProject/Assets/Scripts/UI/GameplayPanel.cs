@@ -9,6 +9,7 @@ namespace GMDG.RainDrop.UI
     {
         [SerializeField] private TMP_InputField InputField;
         [SerializeField] private TMP_Text PointsText;
+        [SerializeField] private TMP_Text LivesText;
 
         private IEnumerator _forceInputFieldFocusCoroutine;
 
@@ -31,12 +32,17 @@ namespace GMDG.RainDrop.UI
 
         private void OnEnable()
         {
-            PointsText.text = GameManager.Instance.Points.ToString();
-
             // Subscribes
             InputField.onSubmit.AddListener(InputFieldStringSubmitted);
 
-            EventManager.Instance.Subscribe(EEvent.OnGameManagerChangedPoints, ScoreChanged);
+            EventManager.Instance.Subscribe(EEvent.OnGameManagerPointsChanged, ScoreChanged);
+            EventManager.Instance.Subscribe(EEvent.OnGameManagerLivesChanged, LivesChanged);
+        }
+
+        private void Start()
+        {
+            PointsText.text = GameManager.Instance.Points.ToString();
+            LivesText.text = GameManager.Instance.Lives.ToString();
         }
 
         private void OnDisable()
@@ -44,7 +50,8 @@ namespace GMDG.RainDrop.UI
             // Unsubscribes
             InputField.onSubmit.RemoveListener(InputFieldStringSubmitted);
 
-            EventManager.Instance.Unsubscribe(EEvent.OnGameManagerChangedPoints, ScoreChanged);
+            EventManager.Instance.Unsubscribe(EEvent.OnGameManagerPointsChanged, ScoreChanged);
+            EventManager.Instance.Unsubscribe(EEvent.OnGameManagerLivesChanged, LivesChanged);
         }
 
         #endregion
@@ -55,6 +62,13 @@ namespace GMDG.RainDrop.UI
             int score = (int)args[0];
             PointsText.text = score.ToString();
         }
+
+        private void LivesChanged(object[] args)
+        {
+            int lives = (int)args[0];
+            LivesText.text = lives.ToString();
+        }
+
         #endregion
 
         #region UI_Events_Listeners

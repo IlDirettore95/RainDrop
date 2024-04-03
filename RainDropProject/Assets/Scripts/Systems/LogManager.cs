@@ -14,12 +14,13 @@ namespace GMDG.RainDrop.System
 
         private void Awake()
         {
-#if UNITY_EDITOR && DEBUG_MODE
+#if UNITY_EDITOR && DEBUG_MODE && DEBUG_END_OF_FRAME
             _endOfFrameCoroutine = TrackEndOfFrame();
             StartCoroutine(_endOfFrameCoroutine);
 #endif
         }
 
+#if UNITY_EDITOR && DEBUG_MODE && DEBUG_END_OF_FRAME
         private IEnumerator TrackEndOfFrame()
         {
             while(true) 
@@ -28,8 +29,9 @@ namespace GMDG.RainDrop.System
                 LogEndOfFrame();
             }
         }
+#endif
 
-        #endregion
+#endregion
 
 #if UNITY_EDITOR
         [Conditional("DEBUG_MODE")]
@@ -46,8 +48,20 @@ namespace GMDG.RainDrop.System
 #else
         [Conditional("DONT_RUN")]
 #endif
+        public static void LogGameManager(GameManager context)
+        {
+            Debug.Log(string.Format("<color=lime>Game Manager: <b>Lives: {0}</b></color>", context.Lives));
+            Debug.Log(string.Format("<color=lime>Game Manager: <b>Points: {0}</b></color>", context.Points));
+            Debug.Log(string.Format("<color=lime>Game Manager: <b>Point Left to change difficulty: {0}</b></color>", context.PointsLeftToChangeDifficulty));
+        }
+
+#if UNITY_EDITOR
+        [Conditional("DEBUG_MODE")]
+#else
+        [Conditional("DONT_RUN")]
+#endif
         public static void LogLevelManager(LevelManager context)
-        { 
+        {
             Debug.Log(string.Format("<color=orange>Level Manager: <b>List of drop count: {0}</b></color>", context.Drops.Count));
             Debug.Log(string.Format("<color=orange>Level Manager: <b>Normal Pool: {0}</b></color>", context.DropsPool.ToString()));
             Debug.Log(string.Format("<color=orange>Level Manager: <b>Golden Pool: {0}</b></color>", context.GoldenDropsPool.ToString()));

@@ -10,9 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8cf1aa15201d8534fb7f9511d237b60b, type: 3}
-  m_Name: Easy
+  m_Name: EasyA
   m_EditorClassIdentifier: 
   GoldenDropSpawnPercentage: 8
+  DropsSpeed: 0.5
+  SpawnCooldown: 1.66
+  ScoreToReach: 1500
   OperationsData:
   - FirstOperand: 2
     SecondOperand: 3
@@ -23,45 +26,21 @@ MonoBehaviour:
   - FirstOperand: 2
     SecondOperand: 2
     OperationType: 0
-  - FirstOperand: 2
-    SecondOperand: 4
-    OperationType: 0
   - FirstOperand: 3
     SecondOperand: 3
     OperationType: 0
-  - FirstOperand: 5
-    SecondOperand: 3
-    OperationType: 1
-  - FirstOperand: 4
-    SecondOperand: 2
-    OperationType: 1
-  - FirstOperand: 8
-    SecondOperand: 7
-    OperationType: 1
-  - FirstOperand: 7
-    SecondOperand: 3
-    OperationType: 1
   - FirstOperand: 2
-    SecondOperand: 2
-    OperationType: 2
-  - FirstOperand: 7
     SecondOperand: 1
-    OperationType: 2
-  - FirstOperand: 4
-    SecondOperand: 3
-    OperationType: 2
-  - FirstOperand: 3
-    SecondOperand: 3
-    OperationType: 2
-  - FirstOperand: 9
-    SecondOperand: 3
-    OperationType: 3
+    OperationType: 0
   - FirstOperand: 6
-    SecondOperand: 3
-    OperationType: 3
-  - FirstOperand: 10
-    SecondOperand: 1
-    OperationType: 3
-  - FirstOperand: 16
     SecondOperand: 4
-    OperationType: 3
+    OperationType: 0
+  - FirstOperand: 7
+    SecondOperand: 1
+    OperationType: 2
+  - FirstOperand: 4
+    SecondOperand: 3
+    OperationType: 2
+  - FirstOperand: 3
+    SecondOperand: 3
+    OperationType: 2

@@ -1,16 +1,18 @@
 ﻿using System;
+using System.Diagnostics;
+using UnityEngine;
 
 namespace GMDG.RainDrop.Entities
 {
-    public class And : Operation
+    public class Or : Operation
     {
         // Operands are expected to represent binary numbers
-        public And(int firstOperand, int secondOperand) : base(firstOperand, secondOperand)
+        public Or(int firstOperand, int secondOperand) : base(firstOperand, secondOperand)
         {
             int firstOperandDecimal = Convert.ToInt32(firstOperand.ToString(), 2);
             int secondOperandDecimal = Convert.ToInt32(secondOperand.ToString(), 2);
-            
-            Result = int.Parse(Convert.ToString(firstOperandDecimal & secondOperandDecimal, 2));
+
+            Result = int.Parse(Convert.ToString(firstOperandDecimal | secondOperandDecimal, 2));
         }
 
         public override string ToString()
@@ -20,7 +22,7 @@ namespace GMDG.RainDrop.Entities
             string firstOperandText = _firstOperand.ToString();
             string secondOperandText = _secondOperand.ToString();
 
-            if (firstOperandText.Length > secondOperandText.Length) 
+            if (firstOperandText.Length > secondOperandText.Length)
             {
                 string textToAdd = string.Empty;
                 for (int i = 0; i < firstOperandText.Length - secondOperandText.Length; i++)
@@ -39,9 +41,10 @@ namespace GMDG.RainDrop.Entities
                 firstOperandText = firstOperandText.Insert(0, textToAdd);
             }
 
-            text += firstOperandText + Environment.NewLine + "&" + Environment.NewLine + secondOperandText;
+            text += firstOperandText + Environment.NewLine + "|" + Environment.NewLine + secondOperandText;
 
             return text;
         }
     }
 }
+

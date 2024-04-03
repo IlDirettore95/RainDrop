@@ -5,7 +5,6 @@ namespace GMDG.RainDrop.Entities
     [Serializable]
     public abstract class Operation
     {
-        public int x;
         public int Result { get; protected set; }
         
         protected int _firstOperand;

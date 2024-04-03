@@ -4,11 +4,17 @@ using UnityEngine;
 using GMDG.RainDrop.Entities;
 using GMDG.RainDrop.Scriptable;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace GMDG.RainDrop.System
 {
     public class LevelManager : MonoBehaviour
     {
-        [SerializeField] private List<DifficultyAsset> Difficulties = new List<DifficultyAsset>();
+        public static LevelManager Instance;
+
+        public List<DifficultyAsset> Difficulties = new List<DifficultyAsset>();
         [SerializeField] private GameObject DropPrefab;
         [SerializeField] private GameObject GoldenDropPrefab;
 
@@ -30,6 +36,34 @@ namespace GMDG.RainDrop.System
         // Maps result (int) into list's indexes
         private Dictionary<int, List<Drop>> _dropsPerResult;
 
+        // Difficulty settings
+        private int _currentDifficultyIndex = 0;
+        public int CurrentDifficultyIndex
+        {
+            get
+            {
+                return _currentDifficultyIndex;
+            }
+            private set
+            {
+                _currentDifficultyIndex = value;
+                if (_currentDifficultyIndex < Difficulties.Count)
+                {
+                    _dropsSpeed = Difficulties[_currentDifficultyIndex].DropsSpeed;
+                    _spawnCooldown = new WaitForSeconds(Difficulties[_currentDifficultyIndex].SpawnCooldown);
+                    EventManager.Instance.Publish(EEvent.OnLevelManagerDifficultyChanged, Difficulties[_currentDifficultyIndex]);
+                }
+                else
+                {
+                    EventManager.Instance.Publish(EEvent.OnLevelManagerLastDifficultyFinished);
+                }
+            }
+        }
+
+        public DifficultyAsset CurrentDifficulty => Difficulties[CurrentDifficultyIndex];
+
+        private float _dropsSpeed;
+
         private IEnumerator _spawnCoroutine;
         private WaitForSeconds _spawnCooldown;
 
@@ -38,6 +72,9 @@ namespace GMDG.RainDrop.System
 
         private float DropHalfWidth => _dropPrefabSpriteRenderer.bounds.extents.x;
         private float DropHalfHeight => _dropPrefabSpriteRenderer.bounds.extents.y;
+
+        private List<int> _indexesOfLanesAvailable;
+        private float[] _cooldownsPerLane;
 
         private int NumberOfLanes => (int)(ScreenWidth / (DropHalfWidth * 2));
         private float LaneWidth => ScreenWidth / NumberOfLanes;
@@ -58,6 +95,16 @@ namespace GMDG.RainDrop.System
             Debug.Assert(DropPrefab.GetComponent<Drop>() != null, "Drop prefab does not have a Drop component!");
             Debug.Assert(DropPrefab.GetComponent<SpriteRenderer>() != null, "Drop prefab does not have a SpriteRenderer component!");
 
+            // Singleton
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(this);
+            }
+
             _dropPrefabSpriteRenderer = DropPrefab.GetComponent<SpriteRenderer>();
 
             _dropsPool = new StaticPool(DropPrefab, 16);
@@ -67,12 +114,26 @@ namespace GMDG.RainDrop.System
 
             _dropsPerResult = new Dictionary<int, List<Drop>>();
 
+            // Init Difficulty
+            CurrentDifficultyIndex = 0;
+
             _spawnCoroutine = SpawnCoroutine();
-            _spawnCooldown = new WaitForSeconds(2);
+
+            _indexesOfLanesAvailable = new List<int>();
+            for (int i = 0; i < NumberOfLanes; i++) 
+            { 
+                _indexesOfLanesAvailable.Add(i);
+            }
+            _cooldownsPerLane = new float[NumberOfLanes];
+            for (int i = 0;i < NumberOfLanes; i++) 
+            {
+                _cooldownsPerLane[i] = -1.0f;
+            }
 
             // Subscribe listeners
             EventManager.Instance.Subscribe(EEvent.OnGameManagerChangedState, GameManagerStateChanged);
             EventManager.Instance.Subscribe(EEvent.OnUIManagerResultWasSubmitted, ResultSubmitted);
+            EventManager.Instance.Subscribe(EEvent.OnGameManagerTargetPointsReached, TargetScoreReached);
 
             EventManager.Instance.Publish(EEvent.OnGameManagerLoaded);
         }
@@ -82,21 +143,43 @@ namespace GMDG.RainDrop.System
             // Unsubscribe listeners
             EventManager.Instance.Unsubscribe(EEvent.OnGameManagerChangedState, GameManagerStateChanged);
             EventManager.Instance.Unsubscribe(EEvent.OnUIManagerResultWasSubmitted, ResultSubmitted);
+            EventManager.Instance.Unsubscribe(EEvent.OnGameManagerTargetPointsReached, TargetScoreReached);
 
             EventManager.Instance.Publish(EEvent.OnGameManagerDestroyed);
         }
 
         private void Update()
         {
+#if DEBUG_MODE && DEBUG_LEVEL_MANAGER
             LogManager.LogLevelManager(this);
+#endif
 
+            // Move Drops
             for (int i = 0; i < _drops.Count; i++) 
             {
-                _drops[i].transform.position += Vector3.down * 1.0f * Time.deltaTime;
+                _drops[i].transform.position += Vector3.down * _dropsSpeed * Time.deltaTime;
 
                 if (_drops[i].transform.position.y < -ScreenHeight / 2 - DropHalfHeight)
                 {
                     DespawnDrop(i);
+                    EventManager.Instance.Publish(EEvent.OnLevelManagerDropDespawned);
+                }
+            }
+
+            // Update cooldowns
+            for (int i = 0; i < _cooldownsPerLane.Length; i++)
+            {
+                if (_cooldownsPerLane[i] == -1)
+                {
+                    continue;
+                }
+
+                _cooldownsPerLane[i] -= Time.deltaTime;
+
+                if (_cooldownsPerLane[i] <= 0)
+                {
+                    _cooldownsPerLane[i] = -1;
+                    _indexesOfLanesAvailable.Add(i);
                 }
             }
         }
@@ -104,6 +187,8 @@ namespace GMDG.RainDrop.System
 #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
+            if (!Application.isPlaying) return;
+            
             // Draw Screen
             Gizmos.color = Color.cyan;
             Gizmos.DrawWireCube(transform.position, new Vector3(ScreenWidth, ScreenHeight, 0));
@@ -115,11 +200,26 @@ namespace GMDG.RainDrop.System
                 Gizmos.DrawLine(new Vector3(-ScreenWidth/2 + i * LaneWidth, ScreenHeight / 2, 0), new Vector3(-ScreenWidth / 2 + i * LaneWidth, -ScreenHeight / 2, 0));
             }
 
-            
+            // Draw Lanes cooldown
+            GUIStyle style = new GUIStyle();
+
+            for (int i = 0; i < NumberOfLanes; i++)
+            {
+                if (_indexesOfLanesAvailable.Contains(i))
+                {
+                    style.normal.textColor = Color.green;
+                }
+                else
+                {
+                    style.normal.textColor = Color.red;
+                }
+
+                Handles.Label(new Vector3(LanePositionX(i), ScreenHeight / 2 - DropHalfHeight, 0), _cooldownsPerLane[i].ToString(), style);
+            }
         }
 #endif
 
-        #endregion
+#endregion
 
         #region Event_Listeners
 
@@ -132,6 +232,7 @@ namespace GMDG.RainDrop.System
             {
                 case GameManager.EState.Gameplay:
                     StopCoroutine(_spawnCoroutine);
+                    DespawnAllDrop();
                     break;
             }
 
@@ -153,7 +254,7 @@ namespace GMDG.RainDrop.System
                 return;
             }
 
-            for (int i = dropsList.Count - 1; i >= 0; i--)
+            for (int i = dropsList.Count - 1; i >= 0 && dropsList.Count > 0; i--)
             {
                 Drop drop = dropsList[i];
                 if (drop.IsGolden)
@@ -170,6 +271,12 @@ namespace GMDG.RainDrop.System
             }
         }
 
+        private void TargetScoreReached(object[] args)
+        {
+            // Change Difficulty
+            CurrentDifficultyIndex++;
+        }
+
         #endregion
 
         private IEnumerator SpawnCoroutine()
@@ -180,12 +287,11 @@ namespace GMDG.RainDrop.System
                 if (_dropsPool.HasItems())
                 {
                     // Position
-                    int randomLaneIndex = Random.Range(0, NumberOfLanes);
+                    int randomLaneIndex = _indexesOfLanesAvailable[Random.Range(0, _indexesOfLanesAvailable.Count)];
                     float randomX = LanePositionX(randomLaneIndex);
 
                     // Operation Type 
-                    DifficultyAsset difficulty = Difficulties[0];
-                    OperationData randomOperationData = difficulty.OperationsData[Random.Range(0, difficulty.OperationsData.Count)];
+                    OperationData randomOperationData = CurrentDifficulty.OperationsData[Random.Range(0, CurrentDifficulty.OperationsData.Count)];
                     Operation randomOperation = null;
                     int firstOperand = randomOperationData.FirstOperand;
                     int secondOperand = randomOperationData.SecondOperand;
@@ -206,12 +312,20 @@ namespace GMDG.RainDrop.System
                         case EOperationType.Div:
                             randomOperation = new Div(firstOperand, secondOperand);
                             break;
+
+                        case EOperationType.And:
+                            randomOperation = new And(firstOperand, secondOperand);
+                            break;
                     }
 
                     // Is Golden?
-                    bool isGolden = Random.Range(0, 99) < difficulty.GoldenDropSpawnPercentage - 1 ? true : false;
+                    bool isGolden = Random.Range(1, 100) < CurrentDifficulty.GoldenDropSpawnPercentage ? true : false;
 
                     SpawnDrop(new Vector3(randomX, ScreenHeight / 2 + DropHalfHeight, 0), randomOperation, isGolden);
+
+                    // Set Lane cooldown
+                    _cooldownsPerLane[randomLaneIndex] = DropHalfHeight * 2 / _dropsSpeed;
+                    _indexesOfLanesAvailable.Remove(randomLaneIndex);
                 }
             }
         }
@@ -258,16 +372,22 @@ namespace GMDG.RainDrop.System
             {
                 _dropsPerResult.Remove(result);
             }
-
-            EventManager.Instance.Publish(EEvent.OnLevelManagerDropDespawned);
         }
 
         private void ExplodeAllDrop()
         {
-            for (int i = _drops.Count - 1; i >= 0; i--)
+            for (int i = _drops.Count - 1; i >= 0 && _drops.Count > 0; i--)
             {
                 DespawnDrop(i);
                 EventManager.Instance.Publish(EEvent.OnLevelManagerDropExplosion);
+            }
+        }
+
+        private void DespawnAllDrop()
+        {
+            for (int i = _drops.Count - 1; i >= 0; i--)
+            {
+                DespawnDrop(i);
             }
         }
     }
