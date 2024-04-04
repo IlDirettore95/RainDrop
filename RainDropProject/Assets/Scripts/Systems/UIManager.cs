@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace GMDG.RainDrop.System
 {
@@ -12,6 +9,7 @@ namespace GMDG.RainDrop.System
 
         [SerializeField] private GameObject MainMenuUIPrefab;
         [SerializeField] private GameObject GameplayUIPrefab;
+        [SerializeField] private GameObject PauseUIPrefab;
         [SerializeField] private GameObject GameOverUIPrefab;
 
         #region Unity_Messages
@@ -21,6 +19,7 @@ namespace GMDG.RainDrop.System
             Debug.Assert(CanvasGO != null, "There is not a Canvas linked to UI Manager!");
             Debug.Assert(MainMenuUIPrefab != null, "There is not a MainMenuUIPrefab linked to UI Manager!");
             Debug.Assert(GameplayUIPrefab != null, "There is not a GameplayUIPrefab linked to UI Manager!");
+            Debug.Assert(PauseUIPrefab != null, "There is not a PauseUIPrefab linked to UI Manager!");
             Debug.Assert(GameOverUIPrefab != null, "There is not a GameOverUIPrefab linked to UI Manager!");
 
             // Subscribes
@@ -49,36 +48,26 @@ namespace GMDG.RainDrop.System
             switch (newState)
             {
                 case GameManager.EState.MainMenu:
-                    StartMainMenu();
+                    CreatePanel(MainMenuUIPrefab);
                     break;
                 case GameManager.EState.Gameplay:
-                    StartGameplay();
+                    CreatePanel(GameplayUIPrefab);
+                    break;
+                case GameManager.EState.Pause:
+                    CreatePanel(PauseUIPrefab);
                     break;
                 case GameManager.EState.GameOver:
-                    StartGameOver();
+                    CreatePanel(GameOverUIPrefab);
                     break;
             }
         }
 
-
         #endregion
 
-        private void StartMainMenu()
+        private void CreatePanel(GameObject prefab)
         {
             DestroyAllCanvasChildren();
-            Instantiate(MainMenuUIPrefab, CanvasGO.transform);
-        }
-
-        private void StartGameplay()
-        {
-            DestroyAllCanvasChildren();
-            Instantiate(GameplayUIPrefab, CanvasGO.transform);
-        }
-
-        private void StartGameOver()
-        {
-            DestroyAllCanvasChildren();
-            Instantiate(GameOverUIPrefab, CanvasGO.transform);
+            Instantiate(prefab, CanvasGO.transform);
         }
 
         // Clear all child UI elements

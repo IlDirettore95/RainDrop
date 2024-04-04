@@ -122,11 +122,21 @@ namespace GMDG.RainDrop.System
         OnUIManagerLoaded,
         // Called when the ui manager finished its onDestroy
         OnUIManagerDestroyed,
-        // Called when the start game button is clicked in the main menu
+        // Called when the start game button was clicked in the main menu
         OnUIManagerStartGameClicked,
+        // Called when the quit button was clicked in the main menu
+        OnUIManagerQuitButtonClicked,
         // Called when a valid potential result is submitted via input field
         OnUIManagerResultWasSubmitted,
         // Called when the go back to menu button is clicked
         OnUIManagerGoBackToMenuClicked,
+        // Called when the resume is clicked
+        OnUIManagerResumeClicked,
+
+        // TimerManager----------------------------------------------------------------
+        // Called when the timer manager finished its awake
+        OnTimerManagerLoaded,
+        // Called when the timer manager finished its awake
+        OnTimerManagerDestroyed,
     }
 }

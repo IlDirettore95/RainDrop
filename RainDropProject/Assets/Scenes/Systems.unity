@@ -123,6 +123,50 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &325557106
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 325557108}
+  - component: {fileID: 325557107}
+  m_Layer: 0
+  m_Name: TimersManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &325557107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 325557106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbeb758b6c2d7d043be7405c0b3c0939, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &325557108
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 325557106}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &453323604
 GameObject:
   m_ObjectHideFlags: 0
@@ -606,6 +650,7 @@ MonoBehaviour:
   CanvasGO: {fileID: 1779470027}
   MainMenuUIPrefab: {fileID: 6435273392393064521, guid: 85a7e8e9cf9ddb24ba16963ac67bd08a, type: 3}
   GameplayUIPrefab: {fileID: 7133966829137328652, guid: ea420c9b350309644b1eba376e8e3de4, type: 3}
+  PauseUIPrefab: {fileID: 6435273392393064521, guid: bcdd7d93cfe581c49be9cefb161ff50d, type: 3}
   GameOverUIPrefab: {fileID: 8099507789241308418, guid: 0b59abac0891c314a841adaff64bf247, type: 3}
 --- !u!1 &1779470027
 GameObject:
@@ -717,4 +762,5 @@ SceneRoots:
   - {fileID: 830780364}
   - {fileID: 453323605}
   - {fileID: 1656784701}
+  - {fileID: 325557108}
   - {fileID: 1465606673}

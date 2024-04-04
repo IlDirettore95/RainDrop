@@ -1,5 +1,4 @@
 using GMDG.RainDrop.System;
-using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +8,7 @@ namespace GMDG.RainDrop.UI
     public class MainMenuPanel : MonoBehaviour
     {
         [SerializeField] private Button StartButton;
+        [SerializeField] private Button QuitButton;
         [SerializeField] private TMP_Text BestScoreText;
 
         #region Unity_Messages
@@ -16,6 +16,7 @@ namespace GMDG.RainDrop.UI
         private void Awake()
         {
             Debug.Assert(StartButton != null, "StartButton is not serialized!");
+            Debug.Assert(QuitButton != null, "QuitButton is not serialized!");
             Debug.Assert(BestScoreText != null, "BestScoreText is not serialized!");
 
             // Handle cursor
@@ -31,11 +32,13 @@ namespace GMDG.RainDrop.UI
         private void OnEnable()
         {
             StartButton.onClick.AddListener(StartGameButtonClicked);
+            QuitButton.onClick.AddListener(QuitButtonClicked);
         }
 
         private void OnDisable()
         {
             StartButton.onClick.RemoveListener(StartGameButtonClicked);
+            QuitButton.onClick.RemoveListener(QuitButtonClicked);
         }
 
         #endregion
@@ -45,7 +48,11 @@ namespace GMDG.RainDrop.UI
         {
             EventManager.Instance.Publish(EEvent.OnUIManagerStartGameClicked);
         }
+
+        private void QuitButtonClicked()
+        {
+            EventManager.Instance.Publish(EEvent.OnUIManagerQuitButtonClicked);
+        }
         #endregion
     }
 }
-

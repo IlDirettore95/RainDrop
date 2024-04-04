@@ -10,8 +10,10 @@ namespace GMDG.RainDrop.System
 
         public enum EState
         {
+            None,
             MainMenu,
             Gameplay,
+            Pause,
             GameOver,
         }
 
@@ -106,7 +108,9 @@ namespace GMDG.RainDrop.System
 
             // Subscribes
             EventManager.Instance.Subscribe(EEvent.OnUIManagerStartGameClicked, StartGameClicked);
+            EventManager.Instance.Subscribe(EEvent.OnUIManagerQuitButtonClicked, QuitGameClicked);
             EventManager.Instance.Subscribe(EEvent.OnUIManagerGoBackToMenuClicked, GoBackToMenuClicked);
+            EventManager.Instance.Subscribe(EEvent.OnUIManagerResumeClicked, ResumeClicked);
             EventManager.Instance.Subscribe(EEvent.OnLevelManagerDropExplosion, DropExploded);
             EventManager.Instance.Subscribe(EEvent.OnLevelManagerGoldenDropExplosion, DropExploded);
             EventManager.Instance.Subscribe(EEvent.OnLevelManagerDropDespawned, DropDespawned);
@@ -118,7 +122,8 @@ namespace GMDG.RainDrop.System
         private void Start()
         {
             _pointsLeftToChangeDifficulty = LevelManager.Instance.CurrentDifficulty.ScoreToReach;
-
+            
+            CurrentState = EState.None;
             ChangeState(EState.MainMenu);
         }
 
@@ -126,7 +131,9 @@ namespace GMDG.RainDrop.System
         {
             // Unsubscribes
             EventManager.Instance.Unsubscribe(EEvent.OnUIManagerStartGameClicked, StartGameClicked);
+            EventManager.Instance.Unsubscribe(EEvent.OnUIManagerQuitButtonClicked, QuitGameClicked);
             EventManager.Instance.Unsubscribe(EEvent.OnUIManagerGoBackToMenuClicked, GoBackToMenuClicked);
+            EventManager.Instance.Unsubscribe(EEvent.OnUIManagerResumeClicked, ResumeClicked);
             EventManager.Instance.Unsubscribe(EEvent.OnLevelManagerDropExplosion, DropExploded);
             EventManager.Instance.Unsubscribe(EEvent.OnLevelManagerGoldenDropExplosion, DropExploded);
             EventManager.Instance.Unsubscribe(EEvent.OnLevelManagerDropDespawned, DropDespawned);
@@ -148,6 +155,11 @@ namespace GMDG.RainDrop.System
                     break;
 
                 case EState.Gameplay:
+                    GameplayUpdate();
+                    break;
+
+                case EState.Pause:
+                    PauseUpdate();
                     break;
 
                 case EState.GameOver:
@@ -155,7 +167,7 @@ namespace GMDG.RainDrop.System
             }
         }
 
-#endregion
+        #endregion
 
         #region Event_Listeners
 
@@ -164,9 +176,24 @@ namespace GMDG.RainDrop.System
             ChangeState(EState.Gameplay);
         }
 
+
+        private void QuitGameClicked(object[] obj)
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+        }
+
         private void GoBackToMenuClicked(object[] args)
         {
             ChangeState(EState.MainMenu);
+        }
+
+        private void ResumeClicked(object[] args)
+        {
+            ChangeState(EState.Gameplay);
         }
 
         private void DropExploded(object[] args)
@@ -212,6 +239,7 @@ namespace GMDG.RainDrop.System
             switch (newState)
             {
                 case EState.MainMenu:
+                    EnterMainMenu();
                     break;
 
                 case EState.Gameplay:
@@ -226,6 +254,28 @@ namespace GMDG.RainDrop.System
             // ...
 
             CurrentState = newState;
+        }
+
+        private void EnterMainMenu()
+        {
+            Points = 0;
+            Lives = 3;
+        }
+
+        private void GameplayUpdate()
+        {
+            if (Input.GetKeyDown(KeyCode.P)) 
+            { 
+                ChangeState(EState.Pause);
+            }
+        }
+
+        private void PauseUpdate()
+        {
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                ChangeState(EState.Gameplay);
+            }
         }
 
         private void EnterGameOver()

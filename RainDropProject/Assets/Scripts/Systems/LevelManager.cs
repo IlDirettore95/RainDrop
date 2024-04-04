@@ -50,7 +50,6 @@ namespace GMDG.RainDrop.System
                 if (_currentDifficultyIndex < Difficulties.Count)
                 {
                     _dropsSpeed = Difficulties[_currentDifficultyIndex].DropsSpeed;
-                    _spawnCooldown = new WaitForSeconds(Difficulties[_currentDifficultyIndex].SpawnCooldown);
                     EventManager.Instance.Publish(EEvent.OnLevelManagerDifficultyChanged, Difficulties[_currentDifficultyIndex]);
                 }
             }
@@ -60,17 +59,16 @@ namespace GMDG.RainDrop.System
 
         private float _dropsSpeed;
 
-        private IEnumerator _spawnCoroutine;
-        private WaitForSeconds _spawnCooldown;
-
-        private float ScreenHeight => Camera.main.orthographicSize * 2.0f;
-        private float ScreenWidth => ScreenHeight * Camera.main.aspect;
+        private float ScreenHeight => Camera.main? Camera.main.orthographicSize * 2.0f : 0;
+        private float ScreenWidth => ScreenHeight * (Camera.main? Camera.main.aspect : 0);
 
         private float DropHalfWidth => _dropPrefabSpriteRenderer.bounds.extents.x;
         private float DropHalfHeight => _dropPrefabSpriteRenderer.bounds.extents.y;
 
         private List<int> _indexesOfLanesAvailable;
-        private float[] _cooldownsPerLane;
+        private Timer[] _timersPerLane;
+
+        private Timer _spawnTimer;
 
         private int NumberOfLanes => (int)(ScreenWidth / (DropHalfWidth * 2));
         private float LaneWidth => ScreenWidth / NumberOfLanes;
@@ -113,18 +111,17 @@ namespace GMDG.RainDrop.System
             // Init Difficulty
             CurrentDifficultyIndex = 0;
 
-            _spawnCoroutine = SpawnCoroutine();
-
             _indexesOfLanesAvailable = new List<int>();
             for (int i = 0; i < NumberOfLanes; i++) 
             { 
                 _indexesOfLanesAvailable.Add(i);
             }
-            _cooldownsPerLane = new float[NumberOfLanes];
+            _timersPerLane = new Timer[NumberOfLanes];
             for (int i = 0;i < NumberOfLanes; i++) 
             {
-                _cooldownsPerLane[i] = -1.0f;
+                _timersPerLane[i] = new Timer();
             }
+            _spawnTimer = new Timer();
 
             // Subscribe listeners
             EventManager.Instance.Subscribe(EEvent.OnGameManagerChangedState, GameManagerStateChanged);
@@ -136,6 +133,11 @@ namespace GMDG.RainDrop.System
         
         private void OnDestroy()
         {
+            for (int i = 0; i < NumberOfLanes; i++)
+            {
+                _timersPerLane[i].Stop();
+            }
+
             // Unsubscribe listeners
             EventManager.Instance.Unsubscribe(EEvent.OnGameManagerChangedState, GameManagerStateChanged);
             EventManager.Instance.Unsubscribe(EEvent.OnUIManagerResultWasSubmitted, ResultSubmitted);
@@ -150,6 +152,8 @@ namespace GMDG.RainDrop.System
             LogManager.LogLevelManager(this);
 #endif
 
+            if (GameManager.Instance.CurrentState == GameManager.EState.Pause) return;
+
             // Move Drops
             for (int i = 0; i < _drops.Count; i++) 
             {
@@ -159,23 +163,6 @@ namespace GMDG.RainDrop.System
                 {
                     DespawnDrop(i);
                     EventManager.Instance.Publish(EEvent.OnLevelManagerDropDespawned);
-                }
-            }
-
-            // Update cooldowns
-            for (int i = 0; i < _cooldownsPerLane.Length; i++)
-            {
-                if (_cooldownsPerLane[i] == -1)
-                {
-                    continue;
-                }
-
-                _cooldownsPerLane[i] -= Time.deltaTime;
-
-                if (_cooldownsPerLane[i] <= 0)
-                {
-                    _cooldownsPerLane[i] = -1;
-                    _indexesOfLanesAvailable.Add(i);
                 }
             }
         }
@@ -210,7 +197,7 @@ namespace GMDG.RainDrop.System
                     style.normal.textColor = Color.red;
                 }
 
-                Handles.Label(new Vector3(LanePositionX(i), ScreenHeight / 2 - DropHalfHeight, 0), _cooldownsPerLane[i].ToString(), style);
+                Handles.Label(new Vector3(LanePositionX(i), ScreenHeight / 2 - DropHalfHeight, 0), _timersPerLane[i].TimeLeft.ToString(), style);
             }
         }
 #endif
@@ -226,16 +213,45 @@ namespace GMDG.RainDrop.System
 
             switch (oldState)
             {
-                case GameManager.EState.Gameplay:
-                    StopCoroutine(_spawnCoroutine);
-                    DespawnAllDrop();
+                case GameManager.EState.MainMenu:
+                    switch (newState)
+                    {
+                        case GameManager.EState.Gameplay:
+                            // From MainMenu to Gameplay
+                            // Start the spawntimer based on current difficulty and spawning a random drop after it
+                            _spawnTimer.Start(CurrentDifficulty.SpawnCooldown, SpawnRandomDrop);
+                            break;
+                    }
                     break;
-            }
 
-            switch (newState)
-            {
                 case GameManager.EState.Gameplay:
-                    StartCoroutine(_spawnCoroutine);
+                    switch (newState)
+                    {
+                        case GameManager.EState.Pause:
+                            // From Gameplay to Pause
+                            _spawnTimer.Pause();
+                            break;
+                        case GameManager.EState.GameOver:
+                            // From Gameplay to GameOver
+                            _spawnTimer.Stop();
+                            DespawnAllDrop();
+                            break;
+                    }
+                    break;
+
+                case GameManager.EState.Pause:
+                    switch (newState) 
+                    {
+                        case GameManager.EState.MainMenu:
+                            // From Pause to MainMenu
+                            _spawnTimer.Stop();
+                            DespawnAllDrop();
+                            break;
+                        case GameManager.EState.Gameplay:
+                            // From Pause to Gameplay
+                            _spawnTimer.Unpause();
+                            break;
+                    }
                     break;
             }
         }
@@ -280,59 +296,83 @@ namespace GMDG.RainDrop.System
 
         #endregion
 
-        private IEnumerator SpawnCoroutine()
+        private void SpawnRandomDrop()
         {
-            while(true)
-            {
-                yield return _spawnCooldown;
+            // Is Golden?
+            bool isGolden = Random.Range(1, 100) < CurrentDifficulty.GoldenDropSpawnPercentage ? true : false;
+
+            // If there are enough object in the pools change drop type or terminate the procedure
+            if (isGolden && !_goldenDropsPool.HasItems()) 
+            { 
                 if (_dropsPool.HasItems())
                 {
-                    // Position
-                    int randomLaneIndex = _indexesOfLanesAvailable[Random.Range(0, _indexesOfLanesAvailable.Count)];
-                    float randomX = LanePositionX(randomLaneIndex);
-
-                    // Operation Type 
-                    OperationData randomOperationData = CurrentDifficulty.OperationsData[Random.Range(0, CurrentDifficulty.OperationsData.Count)];
-                    Operation randomOperation = null;
-                    int firstOperand = randomOperationData.FirstOperand;
-                    int secondOperand = randomOperationData.SecondOperand;
-                    switch (randomOperationData.OperationType)
-                    {
-                        case EOperationType.Sum:
-                            randomOperation = new Sum(firstOperand, secondOperand);
-                            break;
-
-                        case EOperationType.Sub:
-                            randomOperation = new Sub(firstOperand, secondOperand);
-                            break;
-
-                        case EOperationType.Mul:
-                            randomOperation = new Mul(firstOperand, secondOperand);
-                            break;
-
-                        case EOperationType.Div:
-                            randomOperation = new Div(firstOperand, secondOperand);
-                            break;
-
-                        case EOperationType.And:
-                            randomOperation = new And(firstOperand, secondOperand);
-                            break;
-
-                        case EOperationType.Or:
-                            randomOperation = new Or(firstOperand, secondOperand);
-                            break;
-                    }
-
-                    // Is Golden?
-                    bool isGolden = Random.Range(1, 100) < CurrentDifficulty.GoldenDropSpawnPercentage ? true : false;
-
-                    SpawnDrop(new Vector3(randomX, ScreenHeight / 2 + DropHalfHeight, 0), randomOperation, isGolden);
-
-                    // Set Lane cooldown
-                    _cooldownsPerLane[randomLaneIndex] = DropHalfHeight * 2 / _dropsSpeed;
-                    _indexesOfLanesAvailable.Remove(randomLaneIndex);
+                    isGolden = false;
+                }
+                else
+                {
+                    return;
                 }
             }
+            else if (!isGolden && !_dropsPool.HasItems())
+            {
+                if (_goldenDropsPool.HasItems())
+                {
+                    isGolden = true;
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            // Position
+            int randomLaneIndex = _indexesOfLanesAvailable[Random.Range(0, _indexesOfLanesAvailable.Count)];
+            float randomX = LanePositionX(randomLaneIndex);
+
+            // Operation Type 
+            OperationData randomOperationData = CurrentDifficulty.OperationsData[Random.Range(0, CurrentDifficulty.OperationsData.Count)];
+            Operation randomOperation = null;
+            int firstOperand = randomOperationData.FirstOperand;
+            int secondOperand = randomOperationData.SecondOperand;
+            switch (randomOperationData.OperationType)
+            {
+                case EOperationType.Sum:
+                    randomOperation = new Sum(firstOperand, secondOperand);
+                    break;
+
+                case EOperationType.Sub:
+                    randomOperation = new Sub(firstOperand, secondOperand);
+                    break;
+
+                case EOperationType.Mul:
+                    randomOperation = new Mul(firstOperand, secondOperand);
+                    break;
+
+                case EOperationType.Div:
+                    randomOperation = new Div(firstOperand, secondOperand);
+                    break;
+
+                case EOperationType.And:
+                    randomOperation = new And(firstOperand, secondOperand);
+                    break;
+
+                case EOperationType.Or:
+                    randomOperation = new Or(firstOperand, secondOperand);
+                    break;
+            }
+
+            SpawnDrop(new Vector3(randomX, ScreenHeight / 2 + DropHalfHeight, 0), randomOperation, isGolden);
+
+            // Start Lane timer
+            _timersPerLane[randomLaneIndex].Start(DropHalfHeight * 2 / _dropsSpeed, () =>
+            {
+                // callback
+                _indexesOfLanesAvailable.Add(randomLaneIndex);
+            });
+            _indexesOfLanesAvailable.Remove(randomLaneIndex);
+
+            // Restart spawn
+            _spawnTimer.Start(CurrentDifficulty.SpawnCooldown, SpawnRandomDrop);
         }
 
         private void SpawnDrop(Vector2 position, Operation operation, bool isGolden)
