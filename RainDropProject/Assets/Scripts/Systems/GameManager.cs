@@ -1,5 +1,4 @@
 ﻿using GMDG.RainDrop.Scriptable;
-using System;
 using UnityEngine;
 
 namespace GMDG.RainDrop.System

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using UnityEngine;
 
 namespace GMDG.RainDrop.Entities
 {
